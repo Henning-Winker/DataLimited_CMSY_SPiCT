@@ -134,7 +134,7 @@ all_stocks_res <- foreach(i = 1:length(stocklist), .combine = rbind, .options.sn
                                dimnames=list(NULL, c("Rep", "B_BMSY_start", "B_BMSY_mid", "B_BMSY_end", "Stock", "trial"))))
   
   
-  for (j in no.reps){
+  for (j in 1:no.reps){
     
     cmsy_output <- data.frame(Rep = rep_names, B_BMSY_start = NA,
                               B_BMSY_mid = NA, B_BMSY_end = NA)
@@ -156,7 +156,7 @@ all_stocks_res <- foreach(i = 1:length(stocklist), .combine = rbind, .options.sn
     
     cmsy_output$Stock <- stocklist[i]
     ### save raw output
-    ##save(cmsy_output, file = paste0("Jacobian/CMSY2/CMSY2_Sensitivity_", i, "_rep", j, ".RData"))
+    save(cmsy_output, file = paste0("CMSY2/CMSY2_Sensitivity_", stocklist[i], "_rep", j, ".RData"))
     
     #code to refine output and save
     ups <- cmsy_output[c(1,3,5,7,9,11,13,15),]

@@ -123,7 +123,7 @@ for (i in stocklist){
                                dimnames=list(NULL, c("Rep", "B_BMSY_start", "B_BMSY_mid", "B_BMSY_end", "Stock", "trial"))))
   
   
-  for (j in no.reps){
+  for (j in 1:no.reps){
     
     cmsy_output <- data.frame(Rep = rep_names, B_BMSY_start = NA,
                               B_BMSY_mid = NA, B_BMSY_end = NA)
