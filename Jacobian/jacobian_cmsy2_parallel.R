@@ -4,26 +4,6 @@ library(ggplot2)
 
 source ("jacobian_prior_funcs.r")
 
-#### load the data for each stock
-
-Cod6a.data = read.csv("../Data/Cod_6_a/Cod.6a.Data.csv")
-Cod7ek.data = read.csv("../Data/Cod_7_ek/Cod.7ek.Data.csv")
-CodFaroe.data = read.csv("../Data/Cod_Faroe/Cod.Faroe.Data.csv")
-CodNS.data = read.csv("../Data/Cod_NS/Cod.NS.Data.csv")
-Had6b.data = read.csv("../Data/Had_6_b/Had.6b.Data.csv")
-Had7bk.data = read.csv("../Data/Had_7_bk/Had.7bk.Data.csv")
-HadNS.data = read.csv("../Data/Had_NS/Had.NS.Data.csv")
-Ple7a.data = read.csv("../Data/Ple_7_a/Ple.7a.Data.csv")
-Ple7hk.data = read.csv("../Data/Ple_7_hk/Ple.7hk.Data.csv")
-Sol7a.data = read.csv("../Data/Sol_7_a/Sol.7a.Data.csv")
-Sol7fg.data = read.csv("../Data/Sol_7_fg/Sol.7fg.Data.csv")
-Sol7hk.data = read.csv("../Data/Sol_7_hk/Sol.7hk.Data.csv")
-Sol2024.data = read.csv("../Data/Sol_2024/Sol.2024.Data.csv")
-Whg6a.data = read.csv("../Data/Whg_6_a/Whg.6a.Data.csv")
-Whg7a.data = read.csv("../Data/Whg_7_a/Whg.7a.Data.csv")
-Whg7bk.data = read.csv("../Data/Whg_7_bk/Whg.7bk.data.csv")
-WhgNS.data = read.csv("../Data/Whg_NS/Whg.NS.Data.csv")
-
 stocklist <- c("Cod6a", "Cod7ek", 
                "CodFaroe", "CodNS",
                "Had6b" , "Had7bk" , "HadNS" , 
@@ -43,12 +23,32 @@ library(doSNOW)
 cl <- makeSOCKcluster(8)
 registerDoSNOW(cl)
 
-pb <- txtProgressBar(max=nrow(cp_df), style=3)
+pb <- txtProgressBar(max=length(stocklist), style=3)
 progress <- function(n) setTxtProgressBar(pb, n)
 opts <- list(progress=progress)
 
 all_stocks_res <- foreach(i = 1:length(stocklist), .combine = rbind, .options.snow=opts) %dopar% {
-##for (i in stocklist){
+    library(datalimited2)
+    ##for (i in stocklist){
+    ## load the data for each stock - should do this in loop but naming variable
+    Cod6a.data = read.csv("../Data/Cod_6_a/Cod.6a.Data.csv")
+    Cod7ek.data = read.csv("../Data/Cod_7_ek/Cod.7ek.Data.csv")
+    CodFaroe.data = read.csv("../Data/Cod_Faroe/Cod.Faroe.Data.csv")
+    CodNS.data = read.csv("../Data/Cod_NS/Cod.NS.Data.csv")
+    Had6b.data = read.csv("../Data/Had_6_b/Had.6b.Data.csv")
+    Had7bk.data = read.csv("../Data/Had_7_bk/Had.7bk.Data.csv")
+    HadNS.data = read.csv("../Data/Had_NS/Had.NS.Data.csv")
+    Ple7a.data = read.csv("../Data/Ple_7_a/Ple.7a.Data.csv")
+    Ple7hk.data = read.csv("../Data/Ple_7_hk/Ple.7hk.Data.csv")
+    Sol7a.data = read.csv("../Data/Sol_7_a/Sol.7a.Data.csv")
+    Sol7fg.data = read.csv("../Data/Sol_7_fg/Sol.7fg.Data.csv")
+    Sol7hk.data = read.csv("../Data/Sol_7_hk/Sol.7hk.Data.csv")
+    Sol2024.data = read.csv("../Data/Sol_2024/Sol.2024.Data.csv")
+    Whg6a.data = read.csv("../Data/Whg_6_a/Whg.6a.Data.csv")
+    Whg7a.data = read.csv("../Data/Whg_7_a/Whg.7a.Data.csv")
+    Whg7bk.data = read.csv("../Data/Whg_7_bk/Whg.7bk.Data.csv")
+    WhgNS.data = read.csv("../Data/Whg_NS/Whg.NS.Data.csv")
+    
   print(paste("Working on", stocklist[i]))
   data = get(paste0(stocklist[i], ".data"))
   
@@ -174,9 +174,12 @@ all_stocks_res <- foreach(i = 1:length(stocklist), .combine = rbind, .options.sn
     all_res <- rbind(all_res, res)
   }
   ##
-  ##save(all_res, file = paste0("Jacobian/CMSY2/CMSY2_Sensitivity_", i, "_all.RData"))
+  save(all_res, file = paste0("CMSY2/CMSY2_Sensitivity_", stocklist[i], "_all.RData"))
   all_res
     
 }
+
+close(pb)
+stopCluster(cl)
 
 save(all_stocks_res, file = paste0("Jacobian/CMSY2/CMSY2_Sensitivity_all_stocks.RData"))
