@@ -182,4 +182,5 @@ all_stocks_res <- foreach(i = 1:length(stocklist), .combine = rbind, .options.sn
 close(pb)
 stopCluster(cl)
 
-save(all_stocks_res, file = paste0("Jacobian/CMSY2/CMSY2_Sensitivity_all_stocks.RData"))
+save(all_stocks_res, file = paste0("CMSY2/CMSY2_Sensitivity_all_stocks.RData"))
+
