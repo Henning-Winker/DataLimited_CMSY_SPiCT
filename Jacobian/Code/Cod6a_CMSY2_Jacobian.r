@@ -98,7 +98,7 @@ cmsy_output <- data.frame(Rep = rep_names, B_BMSY_start = NA,
                           B_BMSY_mid = NA, B_BMSY_end = NA)
 
 for (i in 1:17){
-  temp <- cmsy2(year = Cod6a.data$year, catch = Cod6a.data$catch, resilience = NA,
+  temp <- cmsy2(year = data$year, catch = data$catch, resilience = NA,
                 r.low = cmsy_input[i,1], r.hi =cmsy_input[i,2],
                 stb.low = cmsy_input[i,3], stb.hi = cmsy_input[i,4],
                 int.yr = int.yr,

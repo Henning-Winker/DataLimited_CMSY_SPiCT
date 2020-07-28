@@ -21,7 +21,7 @@ test3$Diff = test3$Est.Value - test3$ICES.Value
 
 test4 <- dcast(test3, Stock + Year +  Method ~ variable)
 
-pdf("Kobe plot Est-ICES.pdf", width =  6.69291)
+pdf("Kobe plot Est-ICES_July.pdf", width =  6.69291)
 ggplot (test4, aes(x= B_BMSY, y = F_FMSY, label = test4$Stock, colour = Method))+
   scale_color_manual(values=c("#D55E00", "#56B4E9"))+
   geom_point()+

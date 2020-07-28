@@ -33,82 +33,112 @@ Whg7bk.data = read.csv("Data/Whg_7_bk/Whg.7bk.Data.csv")
 WhgNS.data = read.csv("Data/Whg_NS/Whg.NS.Data.csv")
 
 #### ICES Ref Points
-# source("Data/Ices ref points2.r")
-# 
-# 
-# Cod6a_Ices <- ICES[ICES$Stock== "Cod6a", ]
-# 
-# ICES <- ICES[ICES$Purpose == "Advice", ]
-# ICES <- ICES[ICES$Year < 2018, ]
-# ICES.df <- data.frame (Stock = ICES$Stock, 
-#                        Year = ICES$Year,
-#                     B_BMSY = ICES$B_BMSY,
-#                     F_FMSY = ICES$F_FMSY, 
-#                     Method = "ICES")
-# 
-# Cod6a_Ices <- Cod6a_Ices[Cod6a_Ices$Year < 2018, ]
-# Cod6a.df <- data.frame (Stock = Cod6a_Ices$Stock, 
-#                         Year = Cod6a_Ices$Year,
-#                         B_BMSY = Cod6a_Ices$B_BMSY,
-#                         F_FMSY = Cod6a_Ices$F_FMSY, 
-#                         Method = "ICES")
-# 
-# ICES.df <- rbind(ICES.df, Cod6a.df)
-#   
-# # Whg6a.ices <- read.csv("Data/ICES assessment PB Whg6a.csv") 
-# # ICES.df <- rbind (ICES.df, Whg6a.ices)
-# 
-# 
-# #### load CMSY results
-# cmsyfiles = list.files("CMSY_Results")
-# cmsyfileloc = "CMSY_Results\\"
-# cmsyfiles = paste0(cmsyfileloc, cmsyfiles)
-# lapply(cmsyfiles, load, .GlobalEnv)
-# 
-# cmsy.df = data.frame()
-# 
-# for (i in stocklist){
-# cmsy <- get((paste0 (i, ".cmsy")), envir = .GlobalEnv) 
-# cmsy.temp <- data.frame (Stock = i,
-#                        Year = cmsy$ref_ts$year,
-#                       B_BMSY = cmsy$ref_ts$bbmsy,
-#                       F_FMSY = cmsy$ref_ts$ffmsy,
-#                       Method = "CMSY")
-# cmsy.df = rbind(cmsy.df, cmsy.temp)
-# }
-# 
-# #### load SPICT results
-# spictfiles = list.files("SPICT_Results/Spict_n2r")
-# spictfileloc = "SPICT_Results/Spict_n2r/"
-# spictfiles = paste0(spictfileloc, spictfiles)
-# lapply(spictfiles, load, .GlobalEnv)
-# 
-# spict.df = data.frame()
-# 
-# for (i in stocklist){
-#   spict <- get((paste0 (i, ".spict")), envir = .GlobalEnv) 
-#   spict.temp <- data.frame (Stock = i,
-#                            Year =   rownames(get.par('logBBmsy', spict, exp=TRUE)),
-#                            B_BMSY = get.par('logBBmsy', spict, exp=TRUE)[, "est"],
-#                            F_FMSY = get.par('logFFmsy', spict, exp=TRUE)[, "est"],
-#                            Method = "SPiCT")
-#   
-#   rownames(get.par('logBBmsy', spict, exp=TRUE))
-#   
-#   spict.df = rbind(spict.df, spict.temp)
-# }
-# 
-# spict.df = spict.df[spict.df$Year %in% 1900:2018, ]
-#  
-# res = rbind(ICES.df, cmsy.df, spict.df)
-# res$Year = as.numeric(res$Year)
-# 
-# res = melt(res, id.vars = c("Stock", "Year", "Method"))
+source("Data/Ices ref points2.r")
 
 
-load ("Data/Assessment Time Series Results.RData")
+Cod6a_Ices <- ICES[ICES$Stock== "Cod6a", ]
 
-# save(res, file = "Data/Assessment Time Series Results.RData")
+ICES <- ICES[ICES$Purpose == "Advice", ]
+ICES <- ICES[ICES$Year < 2018, ]
+ICES.df <- data.frame (Stock = ICES$Stock,
+                       Year = ICES$Year,
+                    B_BMSY = ICES$B_BMSY,
+                    B_BMSY_lo = NA,
+                    B_BMSY_hi = NA,
+                    F_FMSY = ICES$F_FMSY,
+                    F_FMSY_lo = NA,
+                    F_FMSY_hi = NA,
+                    Method = "ICES")
+
+Cod6a_Ices <- Cod6a_Ices[Cod6a_Ices$Year < 2018, ]
+Cod6a.df <- data.frame (Stock = Cod6a_Ices$Stock,
+                        Year = Cod6a_Ices$Year,
+                        B_BMSY = Cod6a_Ices$B_BMSY,
+                        B_BMSY_lo = NA,
+                        B_BMSY_hi = NA,
+                        F_FMSY = Cod6a_Ices$F_FMSY,
+                        F_FMSY_lo = NA,
+                        F_FMSY_hi = NA,
+                        Method = "ICES")
+
+ICES.df <- rbind(ICES.df, Cod6a.df)
+
+
+
+# Whg6a.ices <- read.csv("Data/ICES assessment PB Whg6a.csv")
+# ICES.df <- rbind (ICES.df, Whg6a.ices)
+
+
+#### load CMSY results
+cmsyfiles = list.files("CMSY_Results")
+cmsyfileloc = "CMSY_Results\\"
+cmsyfiles = paste0(cmsyfileloc, cmsyfiles)
+lapply(cmsyfiles, load, .GlobalEnv)
+
+cmsy.df = data.frame()
+
+for (i in stocklist){
+cmsy <- get((paste0 (i, ".cmsy")), envir = .GlobalEnv)
+cmsy.temp <- data.frame (Stock = i,
+                       Year = cmsy$ref_ts$year,
+                      B_BMSY = cmsy$ref_ts$bbmsy,
+                      B_BMSY_lo = cmsy$ref_ts$bbmsy_lo,
+                      B_BMSY_hi = cmsy$ref_ts$bbmsy_hi,
+                      F_FMSY = cmsy$ref_ts$ffmsy,
+                      F_FMSY_lo = cmsy$ref_ts$ffmsy_lo,
+                      F_FMSY_hi = cmsy$ref_ts$ffmsy_hi,
+                      Method = "CMSY")
+cmsy.df = rbind(cmsy.df, cmsy.temp)
+}
+
+#### load SPICT results
+spictfiles = list.files("SPICT_Results/Spict_n2r")
+spictfileloc = "SPICT_Results/Spict_n2r/"
+spictfiles = paste0(spictfileloc, spictfiles)
+lapply(spictfiles, load, .GlobalEnv)
+
+spict.df = data.frame()
+
+for (i in stocklist){
+  spict <- get((paste0 (i, ".spict")), envir = .GlobalEnv)
+  spict.temp <- data.frame (Stock = i,
+                           Year =   rownames(get.par('logBBmsy', spict, exp=TRUE)),
+                           B_BMSY = get.par('logBBmsy', spict, exp=TRUE)[, "est"],
+                           B_BMSY_lo = get.par('logBBmsy', spict, exp=TRUE)[, "ll"],
+                           B_BMSY_hi = get.par('logBBmsy', spict, exp=TRUE)[, "ul"],
+                           F_FMSY = get.par('logFFmsy', spict, exp=TRUE)[, "est"],
+                           F_FMSY_lo = get.par('logFFmsy', spict, exp=TRUE)[, "ll"],
+                           F_FMSY_hi = get.par('logFFmsy', spict, exp=TRUE)[, "ul"],
+                           Method = "SPiCT")
+
+  rownames(get.par('logBBmsy', spict, exp=TRUE))
+
+  spict.df = rbind(spict.df, spict.temp)
+}
+
+spict.df = spict.df[spict.df$Year %in% 1900:2018, ]
+
+res = rbind(ICES.df, cmsy.df, spict.df)
+res$Year = as.numeric(res$Year)
+
+#res = melt(res, id.vars = c("Stock", "Year", "Method"))
+
+
+#load ("Data/Assessment Time Series Results.RData")
+
+#save(res, file = "Data/Assessment Time Series Results with CI.RData")
+
+
+ffmsy <- res[,c(1:2, 6:9) ]
+bbmsy <- res[,c(1:5, 9)] 
+
+ffmsy$variable <- "F_FMSY"
+colnames(ffmsy) <- c("Stock", "Year", "value", "lo", "hi", "Method", "variable")
+
+bbmsy$variable <- "B_BMSY"
+colnames(bbmsy) <- c("Stock", "Year", "value", "lo", "hi", "Method", "variable")
+
+res <- rbind(ffmsy, bbmsy)
 
 
 res$Stock <- factor(res$Stock, levels = c("Cod6a", "Cod7ek", 
@@ -125,8 +155,10 @@ levels(res$variable) <-c('B/B[MSY]',  'F/F[MSY]')
 pdf("Timeseries Plots/timeseries1_July.pdf", width = 8, height = 12)
 ggplot (res[res$Stock %in% stocklist[1:6], ])+
   geom_line (aes(x= Year, y = value, colour = Method))+
+  geom_ribbon(aes(x = Year,ymin=lo, ymax=hi, fill = Method), alpha=0.1)+
   scale_color_manual(values=c("black", "#D55E00", "#56B4E9"))+
   facet_grid(vars(Stock), vars(variable), scales = "free", labeller = label_parsed)+
+  ylim (0,5) +
   geom_hline (yintercept = 1, linetype = "dashed")+
   theme (axis.title = element_blank(),
          legend.title = element_blank(),
@@ -180,3 +212,23 @@ ggplot (res[res$Stock %in% imp.stocks, ])+
          panel.spacing.x=unit(0, "lines"),
          panel.spacing.y=unit(0.2, "lines"))
 dev.off()
+
+
+
+
+cod6a <- res[res$Stock %in% stocklist[1], ]
+
+
+ggplot (res[res$Stock %in% stocklist[1], ])+
+  geom_line (aes(x= Year, y = value, colour = Method))+
+  geom_ribbon(aes(x = Year,ymin=lo, ymax=hi, fill = Method), alpha=0.1)+
+  #geom_line (aes(x= Year, y = lo, colour = Method))+
+   scale_color_manual(values=c("black", "#D55E00", "#56B4E9"))+
+  facet_grid(vars(variable), scales = "free", labeller = label_parsed)
+  # facet_grid(vars(Stock), vars(variable), scales = "free", labeller = label_parsed)+
+  # geom_hline (yintercept = 1, linetype = "dashed")+
+  # theme (axis.title = element_blank(),
+  #        legend.title = element_blank(),
+  #        legend.position = "bottom",
+  #        panel.spacing.x=unit(0, "lines"),
+  #        panel.spacing.y=unit(0.2, "lines"))
