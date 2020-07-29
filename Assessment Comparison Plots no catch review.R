@@ -127,6 +127,7 @@ ggplot (res[res$Stock %in% stocklist[1:6], ])+
   geom_line (aes(x= Year, y = value, colour = Method))+
   scale_color_manual(values=c("black", "#D55E00", "#56B4E9"))+
   facet_grid(vars(Stock), vars(variable), scales = "free", labeller = label_parsed)+
+  scale_x_continuous(breaks = seq(1960,2020,by = 10))+
   geom_hline (yintercept = 1, linetype = "dashed")+
   theme (axis.title = element_blank(),
          legend.title = element_blank(),
@@ -140,6 +141,7 @@ ggplot (res[res$Stock %in% stocklist[7:12], ])+
   geom_line (aes(x= Year, y = value, colour = Method))+
   scale_color_manual(values=c("black", "#D55E00", "#56B4E9"))+
   facet_grid(vars(Stock), vars(variable), scales = "free", labeller = label_parsed)+
+  scale_x_continuous(breaks = seq(1960,2020,by = 10))+
   geom_hline (yintercept = 1, linetype = "dashed")+
   theme (axis.title = element_blank(),
          legend.title = element_blank(),
@@ -155,6 +157,7 @@ ggplot (res[res$Stock %in% stocklist[13:17], ])+
   geom_line (aes(x= Year, y = value, colour = Method))+
   scale_color_manual(values=c("black", "#D55E00", "#56B4E9"))+
   facet_grid(vars(Stock), vars(variable), scales = "free", labeller = label_parsed)+
+  scale_x_continuous(breaks = seq(1960,2020,by = 10))+
   geom_hline (yintercept = 1, linetype = "dashed")+
   theme (axis.title = element_blank(),
          legend.title = element_blank(),
