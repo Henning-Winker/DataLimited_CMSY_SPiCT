@@ -71,7 +71,7 @@ MAPE %>%
   kable_styling()%>%
   row_spec(18, bold = T, color = "white", background = "grey")
 
-write.csv(MAPE, "CMSY and SPICT comparison stats.csv")
+write.csv(MAPE, "CMSY and SPICT comparison stats review.csv")
 
 ################################################################
 ####    Outcome matching
@@ -116,7 +116,7 @@ BBMSY_outcome <- merge(spict_count, cmsy_count)
 
 
 outcome <- rbind(FFMSY_outcome, BBMSY_outcome)
-write.csv(outcome , "RO Outcome Table.csv")
+write.csv(outcome , "RO Outcome Table review.csv")
 
 # BBMSY_Table = tableGrob(BBMSY_outcome, rows = NULL)
 # 

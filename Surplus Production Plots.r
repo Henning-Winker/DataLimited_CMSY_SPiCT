@@ -122,10 +122,10 @@ if(mystock == "HadNS"){
     geom_line(aes(x = B, y = P))+
     coord_cartesian(ylim = ylim, xlim =xlim)+
     facet_wrap(~Stock )+
-    
+    scale_x_continuous(breaks = c(0, signif(xlim, 1)/2, signif(xlim, 1))) +
     geom_hline(yintercept = 0, linetype = "dashed")+
     geom_vline(xintercept = c(kbounds.df$klower, (kbounds.df$kupper)), linetype = "dashed")+
-    geom_point(emp.df,  mapping = aes(x = Bt, y = sp, shape = as.factor(index)))+
+    geom_point(emp.df,  mapping = aes(x = Bt, y = sp, shape = as.factor(index), colour = as.factor(index)))+
     theme(legend.position = "none", axis.title = element_blank(), 
           axis.text.y = element_text(angle = 90, hjust = 0.5, size = 8), axis.text.x = element_text(size = 6))
 }else{
@@ -135,10 +135,10 @@ sp.plot <- ggplot(pred.df )+
   geom_line(aes(x = B, y = P))+
   coord_cartesian(ylim = ylim, xlim =xlim)+
   facet_wrap(~Stock )+
-
+  scale_x_continuous(breaks = c(0, signif(xlim, 1)/2, signif(xlim, 1))) +
   geom_hline(yintercept = 0, linetype = "dashed")+
   geom_vline(xintercept = c(kbounds.df$klower, (kbounds.df$kupper)), linetype = "dashed")+
-  geom_point(emp.df,  mapping = aes(x = Bt, y = sp, shape = as.factor(index)))+
+  geom_point(emp.df,  mapping = aes(x = Bt, y = sp, shape = as.factor(index), colour = as.factor(index)))+
   theme(legend.position = "none", axis.title = element_blank(), 
         axis.text.y = element_text(angle = 90, hjust = 0.5, size = 8), axis.text.x = element_text(size = 6))
 }
@@ -159,7 +159,7 @@ assign(paste0(mystock, ".plot"), sp.plot)
 #              Sol7hk.plot, Sol2024.plot, Whg6a.plot, Whg7a.plot, Whg7bk.plot, WhgNS.plot,  ncol = 4)
 # dev.off()
 
-pdf("Surplus_Production_Plots/All_Stocks_SurplusProduction.pdf", width =  6.69291, height = 12)
+pdf("Surplus_Production_Plots/All_Stocks_SurplusProduction_colour.pdf", width =  6.69291, height = 12)
 grid.arrange(arrangeGrob (Cod6a.plot, Cod7ek.plot, CodFaroe.plot, CodNS.plot, Had6b.plot,
              Had7bk.plot, HadNS.plot, Ple7a.plot, Ple7hk.plot, Sol7a.plot, Sol7fg.plot,
              Sol7hk.plot, Sol2024.plot, Whg6a.plot, Whg7a.plot, Whg7bk.plot, WhgNS.plot,  ncol = 4,
@@ -203,5 +203,18 @@ dev.off()
 # write.csv(kbounds2, "SPICT K bounds.csv")
 
 
+ggplot(pred.df )+
+  geom_ribbon(aes(x = B, ymin = Plwr, ymax = Pupr),
+              fill = "grey70")+
+  geom_line(aes(x = B, y = P))+
+  coord_cartesian(ylim = ylim, xlim =xlim)+
+  facet_wrap(~Stock )+
+  geom_hline(yintercept = 0, linetype = "dashed")+
+  scale_x_continuous(breaks = c(0, signif(xlim, 1)/2, signif(xlim, 1))) +
+  geom_vline(xintercept = c(kbounds.df$klower, (kbounds.df$kupper)), linetype = "dashed")+
+  geom_point(emp.df,  mapping = aes(x = Bt, y = sp, shape = as.factor(index), colour = as.factor(index)))+
+  theme(legend.position = "none", axis.title = element_blank(), 
+        axis.text.y = element_text(angle = 90, hjust = 0.5, size = 8), axis.text.x = element_text(size = 6))
 
-
+round(xlim, -3)
+signif(xlim, 1)

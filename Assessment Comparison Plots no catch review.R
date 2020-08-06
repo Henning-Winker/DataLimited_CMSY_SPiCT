@@ -168,9 +168,9 @@ dev.off()
 
 ##### Highlighted stocks for detailed discussion
 
-imp.stocks <- c("Cod7ek", "CodNS", "Had6b", "Sol7a", "Sol7fg", "WhgNS")
+imp.stocks <- c("Cod7ek", "CodNS", "Had7bk", "Sol7a", "Sol7fg", "WhgNS")
 
-pdf("Timeseries Plots/timeseries_important_July.pdf", width =  6.69291, height = 12)
+pdf("Timeseries Plots/timeseries_important_July2.pdf", width =  6.69291, height = 12)
 ggplot (res[res$Stock %in% imp.stocks, ])+
   geom_line (aes(x= Year, y = value, colour = Method))+
   scale_color_manual(values=c("black", "#D55E00", "#56B4E9"))+

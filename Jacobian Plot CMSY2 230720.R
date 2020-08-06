@@ -1,5 +1,7 @@
 #### Jacobian plots for CMSY2 ####
 library (ggplot2)
+library(reshape2)
+library(plyr)
 
 load("Jacobian/CMSY2/CMSY2_Sensitivity_all_stocks.RData")
 
@@ -268,32 +270,37 @@ dev.off()
 #################################################
 #### stats for paper ####
 #################################################
+# 
+# p0u <- Res2[Res2$X2 == "p0u", ]
+# p0u_start <- p0u[p0u$X1 == "Start", ]
+# median (p0u_start$Median)
+# 
+# p0u_mid <- p0u[p0u$X1 == "Mid", ]
+# median (p0u_mid$Median)
+# 
+# pTu <- Res2[Res2$X2 == "pTu" & Res2$X1 == "End", ]
+# median (pTu$Median)
+# 
+# # what about not reduce data set
+# p0u <- Res_all[Res_all$X2 == "p0u", ]
+# p0u_start <- p0u[p0u$X1 == "Start", ]
+# median (p0u_start$value)
+# 
+# p0u_mid <- p0u[p0u$X1 == "Mid", ]
+# median (p0u_mid$value)
+# 
+# pTu <- Res_all[Res_all$X2 == "pTu" & Res_all$X1 == "End", ]
+# median (pTu$value)
+# 
+# 
+# Res3 <- ddply(Res2, .(X1, X2), summarise,
+#               Median = median(Median))
+# 
+# Res4 <- dcast(Res3, X2 ~ X1)
+# write.csv(Res4, "Median Jacobian test.csv")
 
-p0u <- Res2[Res2$X2 == "p0u", ]
-p0u_start <- p0u[p0u$X1 == "Start", ]
-median (p0u_start$Median)
+test <- ddply(Res_all, .(variable, prior, limit), summarise,
+                      Median = median(value))
 
-p0u_mid <- p0u[p0u$X1 == "Mid", ]
-median (p0u_mid$Median)
-
-pTu <- Res2[Res2$X2 == "pTu" & Res2$X1 == "End", ]
-median (pTu$Median)
-
-# what about not reduce data set
-p0u <- Res_all[Res_all$X2 == "p0u", ]
-p0u_start <- p0u[p0u$X1 == "Start", ]
-median (p0u_start$value)
-
-p0u_mid <- p0u[p0u$X1 == "Mid", ]
-median (p0u_mid$value)
-
-pTu <- Res_all[Res_all$X2 == "pTu" & Res_all$X1 == "End", ]
-median (pTu$value)
-
-
-Res3 <- ddply(Res2, .(X1, X2), summarise,
-              Median = median(Median))
-
-Res4 <- dcast(Res3, X2 ~ X1)
-write.csv(Res4, "Median Jacobian test.csv")
-
+test_spict <- ddply(spictj, .(prior, limit), summarise,
+              Median = median(value))
