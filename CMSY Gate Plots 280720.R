@@ -149,12 +149,14 @@ ggplot(Gate)+
   scale_color_manual(values=c("black", "#D55E00"))+
   geom_hline(yintercept = 1, linetype = "dotted", alpha = 0.6, colour = "grey80")+
   geom_blank(aes(x = Year, y = Zero))+
+  scale_y_continuous(breaks = seq(0,4,by = 0.5))+
   scale_x_continuous(breaks = seq(1960,2020,by = 10))+
   ylab(expression(B/B[MSY]))+
   theme(legend.title = element_blank(), 
         legend.position = "top",
         axis.title.x = element_blank(),
-        panel.grid = element_blank())+
+        panel.grid = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5 ))+
   geom_line(data = Bounds, aes(x = Year, y = bound_fit_start), colour = "grey70")+
   geom_line(data = Bounds, aes(x = Year, y = bound_fit_mid),colour = "grey70")+
   geom_line(data = Bounds, aes(x = Year, y = bound_fit_end), colour = "grey70")+
@@ -163,4 +165,123 @@ ggplot(Gate)+
   geom_line(data = Bounds, aes(x = Year, y = bound_miss_end), linetype = "dashed", colour = "grey70")+
   facet_wrap(~Stock, ncol = 4, scales = "free_y")
 dev.off()
+
+
+#### Functions to specify y axis labels seperately
+# Taken from https://fishandwhistle.net/post/2018/modifying-facet-scales-in-ggplot2/
+
+Facet <- ggproto(
+  init_scales = function(layout, x_scale = NULL, y_scale = NULL, params) {
+    scales <- list()
+    if (!is.null(x_scale)) {
+      scales$x <- plyr::rlply(max(layout$SCALE_X), x_scale$clone())
+    }
+    if (!is.null(y_scale)) {
+      scales$y <- plyr::rlply(max(layout$SCALE_Y), y_scale$clone())
+    }
+    scales
+  },
+)
+
+
+scale_override <- function(which, scale) {
+  if(!is.numeric(which) || (length(which) != 1) || (which %% 1 != 0)) {
+    stop("which must be an integer of length 1")
+  }
+  
+  if(is.null(scale$aesthetics) || !any(c("x", "y") %in% scale$aesthetics)) {
+    stop("scale must be an x or y position scale")
+  }
+  
+  structure(list(which = which, scale = scale), class = "scale_override")
+}
+
+CustomFacetWrap <- ggproto(
+  "CustomFacetWrap", FacetWrap,
+  init_scales = function(self, layout, x_scale = NULL, y_scale = NULL, params) {
+    # make the initial x, y scales list
+    scales <- ggproto_parent(FacetWrap, self)$init_scales(layout, x_scale, y_scale, params)
+    
+    if(is.null(params$scale_overrides)) return(scales)
+    
+    max_scale_x <- length(scales$x)
+    max_scale_y <- length(scales$y)
+    
+    # ... do some modification of the scales$x and scales$y here based on params$scale_overrides
+    for(scale_override in params$scale_overrides) {
+      which <- scale_override$which
+      scale <- scale_override$scale
+      
+      if("x" %in% scale$aesthetics) {
+        if(!is.null(scales$x)) {
+          if(which < 0 || which > max_scale_x) stop("Invalid index of x scale: ", which)
+          scales$x[[which]] <- scale$clone()
+        }
+      } else if("y" %in% scale$aesthetics) {
+        if(!is.null(scales$y)) {
+          if(which < 0 || which > max_scale_y) stop("Invalid index of y scale: ", which)
+          scales$y[[which]] <- scale$clone()
+        }
+      } else {
+        stop("Invalid scale")
+      }
+    }
+    
+    # return scales
+    scales
+  }
+)
+
+facet_wrap_custom <- function(..., scale_overrides = NULL) {
+  # take advantage of the sanitizing that happens in facet_wrap
+  facet_super <- facet_wrap(...)
+  
+  # sanitize scale overrides
+  if(inherits(scale_overrides, "scale_override")) {
+    scale_overrides <- list(scale_overrides)
+  } else if(!is.list(scale_overrides) || 
+            !all(vapply(scale_overrides, inherits, "scale_override", FUN.VALUE = logical(1)))) {
+    stop("scale_overrides must be a scale_override object or a list of scale_override objects")
+  }
+  
+  facet_super$params$scale_overrides <- scale_overrides
+  
+  ggproto(NULL, CustomFacetWrap,
+          shrink = facet_super$shrink,
+          params = facet_super$params
+  )
+}
+
+p_annoying_x_scale +
+  facet_wrap_custom(~facet_name, scales = "free", ncol = 4, scale_overrides = list(
+    scale_override(1, scale_x_continuous(breaks = c(5750, 5900))),
+    scale_override(6, scale_x_continuous(breaks = c(17800, 17900)))
+  ))
+
+
+#### and the plot
+pdf(paste0("CMSY_Gates_review.pdf"), width =  6.69291, height = 8)
+ggplot(Gate)+
+  geom_line(aes(x =Year, y = value, colour = Method))+
+  scale_color_manual(values=c("black", "#D55E00"))+
+  geom_hline(yintercept = 1, linetype = "dotted", alpha = 0.6, colour = "grey80")+
+  geom_blank(aes(x = Year, y = Zero))+
+  scale_y_continuous(breaks = seq(0,4,by = 0.5))+
+  scale_x_continuous(breaks = seq(1960,2020,by = 10))+
+  ylab(expression(B/B[MSY]))+
+  theme(legend.title = element_blank(), 
+        legend.position = "top",
+        axis.title.x = element_blank(),
+        panel.grid = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5 ))+
+  geom_line(data = Bounds, aes(x = Year, y = bound_fit_start), colour = "grey70")+
+  geom_line(data = Bounds, aes(x = Year, y = bound_fit_mid),colour = "grey70")+
+  geom_line(data = Bounds, aes(x = Year, y = bound_fit_end), colour = "grey70")+
+  geom_line(data = Bounds, aes(x = Year, y = bound_miss_start), linetype = "dashed", colour = "grey70")+
+  geom_line(data = Bounds, aes(x = Year, y = bound_miss_mid), linetype = "dashed",colour = "grey70")+
+  geom_line(data = Bounds, aes(x = Year, y = bound_miss_end), linetype = "dashed", colour = "grey70")+
+  facet_wrap_custom(~Stock, ncol = 4, scales = "free_y", scale_overrides = list(
+    scale_override(6, scale_y_continuous(breaks = seq(0,4,by = 1)))))
+dev.off()
+
   
