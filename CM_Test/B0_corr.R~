@@ -1,0 +1,10 @@
+##----------------------
+## check out correlation with B0
+## CM: Thu Oct 22 2020
+
+## own correlation
+precision <- sdreport(res$obj, getJointPrecision = TRUE)
+
+all_cov <- solve(precision$jointPrecision)
+
+colnames(res$cov.fixed)
